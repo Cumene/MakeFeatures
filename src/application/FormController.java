@@ -18,7 +18,7 @@ public class FormController {
 	 * @param event
 	 */
 	@FXML
-	void onReadAndPlotAction(ActionEvent event){
+	void onOpenDataAction(ActionEvent event){
 
 	}
 
@@ -39,6 +39,62 @@ public class FormController {
 	void onAllClearAction(ActionEvent event){
 
 	}
+
+	/**
+	 * データカット
+	 * @param event
+	 */
+	@FXML
+	void onCuttingDataAction(ActionEvent event){
+
+	}
+
+	/**
+	 * ローパス
+	 * @param event
+	 */
+	@FXML
+	void onLowPassAction(ActionEvent event){
+
+	}
+
+	/**
+	 * 全て等しく線形補間する
+	 * @param event
+	 */
+	@FXML
+	void onLinearInterpolation_E_Action(ActionEvent event){
+
+	}
+
+	/**
+	 * 一方のファイルに時間軸を合わせる線形補間
+	 * @param event
+	 */
+	@FXML
+	void onLinearInterpolation_O_Action(ActionEvent event){
+
+	}
+
+	/**
+	 * 特徴量：平均
+	 * @param event
+	 */
+	@FXML
+	void onAverageAction(ActionEvent event){
+
+	}
+
+	/**
+	 * 特徴量：分散
+	 * @param event
+	 */
+	@FXML
+	void onVarianceAction(ActionEvent event){
+
+	}
+
+
 
 	/**
 	 * Config画面を開く
