@@ -38,9 +38,10 @@
                   <MenuItem fx:id="variance_processing_menuitem" mnemonicParsing="false" text="Variance" />
             </items>
           </Menu>
-          <Menu fx:id="config_menu" mnemonicParsing="false" onAction="#onConfigAction" text="Config">
+          <Menu fx:id="config_menu" mnemonicParsing="false" text="Config">
                <items>
-                  <MenuItem fx:id="create_config_menuitem" mnemonicParsing="false" text="Create" />
+                  <MenuItem fx:id="create_config_menuitem" mnemonicParsing="false" onAction="#onConfigAction" text="Create" />
+                  <MenuItem fx:id="edit_config_menuitem" mnemonicParsing="false" text="Edit" />
                   <SeparatorMenuItem fx:id="separator_config_menuitem" mnemonicParsing="false" />
                   <RadioMenuItem fx:id="config1_radiomenu" mnemonicParsing="false" text="Config1">
                      <toggleGroup>
