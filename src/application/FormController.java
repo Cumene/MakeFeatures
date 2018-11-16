@@ -24,7 +24,7 @@ public class FormController {
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("Config.fxml"));
 		BorderPane root = (BorderPane) loader.load();
-		Scene scene = new Scene(root,500,500);
+		Scene scene = new Scene(root,800,450);
 		Stage stage = new Stage();
 		stage.setScene(scene);
 		stage.showAndWait();

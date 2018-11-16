@@ -18,44 +18,44 @@
 
 <AnchorPane fx:id="baseboard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.FormController">
    <children>
-      <MenuBar prefHeight="25.0" prefWidth="1280.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <MenuBar fx:id="menubar_main" prefHeight="25.0" prefWidth="1280.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <menus>
-          <Menu mnemonicParsing="false" text="Read &amp; Plot">
+          <Menu fx:id="readandplot_menu" mnemonicParsing="false" text="Read &amp; Plot">
             <items>
-                  <MenuItem mnemonicParsing="false" text="Open Data" />
-                  <MenuItem mnemonicParsing="false" text="Reload" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-              <MenuItem mnemonicParsing="false" text="All Clear" />
+                  <MenuItem fx:id="opendata_rp_menuitem" mnemonicParsing="false" text="Open Data" />
+                  <MenuItem fx:id="reload_rp_menuitem" mnemonicParsing="false" text="Reload" />
+                  <SeparatorMenuItem fx:id="separator_rp_menuitem" mnemonicParsing="false" />
+              <MenuItem fx:id="allclear_rp_menuitem" mnemonicParsing="false" text="All Clear" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Processing">
+          <Menu fx:id="processing_menu" mnemonicParsing="false" text="Processing">
             <items>
-                  <MenuItem mnemonicParsing="false" text="Cutting Data" />
-              <MenuItem mnemonicParsing="false" text="Low Pass" />
-                  <MenuItem mnemonicParsing="false" text="Linear Interpolatipn (Equidistant)" />
-                  <MenuItem mnemonicParsing="false" text="Linear Interpolation (one of the standard)" />
-                  <MenuItem mnemonicParsing="false" text="Average" />
-                  <MenuItem mnemonicParsing="false" text="Variance" />
+                  <MenuItem fx:id="cuttingdata_processing_menuitem" mnemonicParsing="false" text="Cutting Data" />
+              <MenuItem fx:id="lowpass_processing_menuitem" mnemonicParsing="false" text="Low Pass" />
+                  <MenuItem fx:id="linearinterpolationE_processing_menuitem" mnemonicParsing="false" text="Linear Interpolatipn (Equidistant)" />
+                  <MenuItem fx:id="linearinterpolationOne_processing_menuitem" mnemonicParsing="false" text="Linear Interpolation (one of the standard)" />
+                  <MenuItem fx:id="average_processing_menuitem" mnemonicParsing="false" text="Average" />
+                  <MenuItem fx:id="variance_processing_menuitem" mnemonicParsing="false" text="Variance" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" onAction="#onConfigAction" text="Config">
+          <Menu fx:id="config_menu" mnemonicParsing="false" onAction="#onConfigAction" text="Config">
                <items>
-                  <MenuItem mnemonicParsing="false" text="Create" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <RadioMenuItem mnemonicParsing="false" text="Config1">
+                  <MenuItem fx:id="create_config_menuitem" mnemonicParsing="false" text="Create" />
+                  <SeparatorMenuItem fx:id="separator_config_menuitem" mnemonicParsing="false" />
+                  <RadioMenuItem fx:id="config1_radiomenu" mnemonicParsing="false" text="Config1">
                      <toggleGroup>
                         <ToggleGroup fx:id="save_config" />
                      </toggleGroup>
                   </RadioMenuItem>
-                  <RadioMenuItem mnemonicParsing="false" text="Config2" toggleGroup="$save_config" />
+                  <RadioMenuItem fx:id="config2_radiomenu" mnemonicParsing="false" text="Config2" toggleGroup="$save_config" />
                </items></Menu>
         </menus>
       </MenuBar>
       <SplitPane dividerPositions="0.5" layoutX="20.0" layoutY="45.0" orientation="VERTICAL" prefHeight="655.0" prefWidth="1240.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="45.0">
         <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+          <AnchorPane fx:id="split_up_anchorpane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <Label prefHeight="318.0" prefWidth="1207.0" text="Log Message" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <Label fx:id="log_label" prefHeight="318.0" prefWidth="1207.0" text="Log Message" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <textFill>
                         <LinearGradient endX="1.0" endY="1.0">
                            <stops>
@@ -67,15 +67,15 @@
                   </Label>
                </children>
             </AnchorPane>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="54.0" prefWidth="130.0">
+          <AnchorPane fx:id="split_down_anchorpane" minHeight="0.0" minWidth="0.0" prefHeight="54.0" prefWidth="130.0">
                <children>
-                  <FlowPane columnHalignment="RIGHT" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <LineChart layoutX="9.0" layoutY="6.0" prefHeight="318.0" prefWidth="1197.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+                  <FlowPane fx:id="graph_flowpane" columnHalignment="RIGHT" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <LineChart fx:id="graph_linechart" layoutX="9.0" layoutY="6.0" prefHeight="318.0" prefWidth="1197.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
                     <xAxis>
-                      <CategoryAxis side="BOTTOM" />
+                      <CategoryAxis fx:id="graph_categoryaxis" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis side="LEFT" />
+                      <NumberAxis fx:id="graph_numberaxis" side="LEFT" />
                     </yAxis>
                   </LineChart>
                </children>
