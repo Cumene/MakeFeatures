@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Label?>
@@ -22,7 +21,7 @@
         <menus>
           <Menu fx:id="readandplot_menu" mnemonicParsing="false" text="Read &amp; Plot">
             <items>
-                  <MenuItem fx:id="opendata_rp_menuitem" mnemonicParsing="false" text="Open Data" />
+                  <MenuItem fx:id="opendata_rp_menuitem" mnemonicParsing="false" onAction="#onOpenDataAction" text="Open Data" />
                   <MenuItem fx:id="reload_rp_menuitem" mnemonicParsing="false" text="Reload" />
                   <SeparatorMenuItem fx:id="separator_rp_menuitem" mnemonicParsing="false" />
               <MenuItem fx:id="allclear_rp_menuitem" mnemonicParsing="false" text="All Clear" />
@@ -36,6 +35,7 @@
                   <MenuItem fx:id="linearinterpolationOne_processing_menuitem" mnemonicParsing="false" text="Linear Interpolation (one of the standard)" />
                   <MenuItem fx:id="average_processing_menuitem" mnemonicParsing="false" text="Average" />
                   <MenuItem fx:id="variance_processing_menuitem" mnemonicParsing="false" text="Variance" />
+                  <MenuItem fx:id="addlabel_processing_menuitem" mnemonicParsing="false" text="Add Label" />
             </items>
           </Menu>
           <Menu fx:id="config_menu" mnemonicParsing="false" text="Config">
@@ -52,7 +52,7 @@
                </items></Menu>
         </menus>
       </MenuBar>
-      <SplitPane dividerPositions="0.5" layoutX="20.0" layoutY="45.0" orientation="VERTICAL" prefHeight="655.0" prefWidth="1240.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="45.0">
+      <SplitPane fx:id="split_pane" dividerPositions="0.5" layoutX="20.0" layoutY="45.0" orientation="VERTICAL" prefHeight="655.0" prefWidth="1240.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="45.0">
         <items>
           <AnchorPane fx:id="split_up_anchorpane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
@@ -71,12 +71,13 @@
           <AnchorPane fx:id="split_down_anchorpane" minHeight="0.0" minWidth="0.0" prefHeight="54.0" prefWidth="130.0">
                <children>
                   <FlowPane fx:id="graph_flowpane" columnHalignment="RIGHT" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="300.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <LineChart fx:id="graph_linechart" layoutX="9.0" layoutY="6.0" prefHeight="318.0" prefWidth="1197.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
+                  <LineChart fx:id="graph_linechart" alternativeColumnFillVisible="true" layoutX="9.0" layoutY="6.0" prefHeight="318.0" prefWidth="1197.0" title="AAA" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0">
                     <xAxis>
-                      <CategoryAxis fx:id="graph_categoryaxis" side="BOTTOM" />
+                      <!--CategoryAxis fx:id="graph_categoryaxis" side="BOTTOM" /-->
+                       <NumberAxis fx:id="graph_numberaxis_x" label="XAXIS" side="BOTTOM" />
                     </xAxis>
                     <yAxis>
-                      <NumberAxis fx:id="graph_numberaxis" side="LEFT" />
+                      <NumberAxis fx:id="graph_numberaxis_y" label="YAXIS" side="LEFT" />
                     </yAxis>
                   </LineChart>
                </children>

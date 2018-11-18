@@ -43,7 +43,7 @@ public class FileData {
 		return file_data_timestamp;
 	}
 
-	public ArrayList<? extends Number>[] getFile_data_contents() {
+	public ArrayList<Float>[] getFile_data_contents() {//とりあえずデータ部はFloat固定します．問題の先送り
 		return file_data_contents;
 	}
 
@@ -54,7 +54,7 @@ public class FileData {
 	/**
 	 *
 	 * @param file データ元Fileです
-	 * @param timestamp_index :timestampがどの列にあるかを指定（一番左なら0,というか一番左にしてくれ)
+	 * @param timestamp_index :timestampがどの列にあるかを指定（一番左なら0,というか一番左にしてくれ．それしかデバッグしてな．．)
 	 *
 	 */
 	@SuppressWarnings("unchecked")
@@ -63,7 +63,7 @@ public class FileData {
 
 		boolean is_first = true;
 		try (BufferedReader br = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {//UTF-8のファイルってこと前提にしていいよね．信じてる
-			for (String line; (line = br.readLine()) != null;) {
+			for (String line; (line = br.readLine()) != null;) {//一行ずつテキストをreadする
 
 				String[] split_line = line.split(",");//csvだしね
 //				for (String a : split_line) {
@@ -71,7 +71,7 @@ public class FileData {
 //				}
 //				System.out.println("");
 
-				if (is_first) {
+				if (is_first) {//最初の行のみ行う処理
 
 					//各配列のインスタンス宣言
 					final int arraylist_init_size = 6000;//10msに1回のデータが1分間想定．性能気になるならテキトーにいじって
@@ -88,7 +88,7 @@ public class FileData {
 					for (int i = 0; i < split_line.length - 1; i++) {
 						if (i == timestamp_index) {
 							j++;
-							//continue;
+
 						}
 						file_data_title[i] = split_line[j];
 						j++;
@@ -101,17 +101,18 @@ public class FileData {
 
 					is_first = false;
 					continue;
-				} else {
+				} else {//2行目以降行う処理
 
+					//データ部分の入力
 					int j = 0;
 					for (int i = 0; i < split_line.length; i++) {
 //						System.out.println(split_line[i]);
-						if (i == timestamp_index) {
+						if (i == timestamp_index) {//タイムスタンプ部分
 
 							file_data_timestamp.add(Long.parseLong(split_line[i]));
 							j--;
-							//continue;
-						} else {
+
+						} else {//実データ部分
 							j++;
 							file_data_contents[j].add(Float.parseFloat(split_line[i]));//とりあえずデータ部はFloat固定します．問題の先送り
 
@@ -129,12 +130,15 @@ public class FileData {
 
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {//軽いテスト
 		FileData fd = new FileData();
 
 		File file = new File("..\\TestData\\testdata.csv");
+
 		fd.import_file(file, 0);
+
 		fd.showAll();
+
 	}
 
 	private void showAll() {
@@ -155,7 +159,7 @@ public class FileData {
 		}
 		System.out.println(fdc_t);
 
-		for(Float l:file_data_contents[9]) {
+		for(String l:file_data_title) {
 			System.out.println(l);
 		}
 
