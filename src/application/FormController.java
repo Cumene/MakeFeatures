@@ -2,6 +2,7 @@ package application;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -17,6 +18,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -40,6 +42,10 @@ public class FormController implements Initializable {
 
 	@FXML
 	private AnchorPane split_down_anchorpane;
+
+	//log
+	@FXML
+	private Label log_label;
 
 	//graph関連
 	@FXML
@@ -68,6 +74,9 @@ public class FormController implements Initializable {
 	//initialize・・・初期化処理
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
+		log_label.setWrapText(true);
+
 		//		System.out.println("Hello initialize");
 
 		//個々参考にしてみたら？
@@ -94,13 +103,23 @@ public class FormController implements Initializable {
 
 		//FileDataのインスタンスを作成してデータimport
 		FileData filedata = new FileData();
-		filedata.import_file(file, 0);//とりあえずtimestampは0想定
+		filedata.import_file(file, 0,1000);//とりあえずtimestampは0想定：とりあえず1000ms (1秒)あいたらおかしいってことで．マジックナンバー
 
 		global_list_filedata.add(filedata);//読み込んだファイルdataはglobal_list_filedataに追加すること．
 
+		Path local_path = filedata.getFile_path();
 		ArrayList<Long> list_timestamp = filedata.getFile_data_timestamp();
 		ArrayList<Float>[] list_data_array = filedata.getFile_data_contents();
 		String[] title_array = filedata.getFile_data_title();
+
+		outputLog(local_path.getFileName()+"を読み込みました");//LogLabeにデータ追加のお知らせ
+
+		if(!filedata.getIs_timestamp_interval()) {
+			Alert interval_alert = new Alert(AlertType.WARNING,"データが飛んでいる可能性があります．コンソール出力を確認してください");
+			interval_alert.showAndWait();
+
+		}
+
 
 		//graphパーツ  @FXMLで作成したパーツはNew宣言不要？ (詳しく調べる必要がある
 
@@ -159,8 +178,10 @@ public class FormController implements Initializable {
 		graph_linechart.setTitle("Graph");//Graphのタイトル
 		graph_linechart.setCreateSymbols(false); //特定マークの無効化
 
-		Alert alert2 = new Alert(AlertType.INFORMATION, "グラフまで終わった．．．？");
-		alert2.showAndWait();
+		outputLog(local_path.getFileName()+"をグラフに描画しました");
+
+//		Alert alert2 = new Alert(AlertType.INFORMATION, "グラフまで終わった．．．？");
+//		alert2.showAndWait();
 
 	}
 
@@ -181,6 +202,20 @@ public class FormController implements Initializable {
 
 		}
 		return list_files;
+	}
+
+	/**
+	 *
+	 * @param message ログに乗せたいメッセージ
+	 */
+	private void outputLog(String message) {
+		StringBuilder log_content = new StringBuilder(4096);
+
+		log_content.append(log_label.getText()).append(message).append("\n");
+		System.out.println(log_content.toString());
+		log_label.setText("");
+		log_label.setText(log_content.toString());//LogLabeにデータ追加のお知らせ
+
 	}
 
 	/**
