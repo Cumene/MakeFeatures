@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,14 +30,10 @@ public class FormController implements Initializable {
 	//ここからフィールド宣言(グローバルは最低限)
 	//file関連
 
+	private ArrayList<FileData> global_list_filedata = new ArrayList<FileData>();
+
 	//pane関連
 
-	//	Stage primaryStage;
-	//
-	//	public void setPrimaryStage(Stage stage) {
-	//		primaryStage = stage;
-	//	}
-	//
 
 	@FXML
 	private SplitPane split_pane;
@@ -64,79 +61,33 @@ public class FormController implements Initializable {
 	//		graph_numberaxis_y = na;
 	//	}
 
-	private XYChart.Series<Number, Number> series;
+	private XYChart.Series<Number, Number>[] series_array;
 
 	//ここまでフィールド宣言
 
 	//initialize・・・初期化処理
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		System.out.println("Hello initialize");
-
-//		series = new XYChart.Series<Number, Number>();
-//		series.setName("p1");//系統名
-//
-//		series.getData().add(new XYChart.Data<Number, Number>(10, 22));
-//		series.getData().add(new XYChart.Data<Number, Number>(30, 33));
-//		series.getData().add(new XYChart.Data<Number, Number>(40, 66));
-//		series.getData().add(new XYChart.Data<Number, Number>(60, 69));
-//		series.getData().add(new XYChart.Data<Number, Number>(100, 77));
-//
-//
-//		//split_pane = new SplitPane();
-//
-//		//split_down_anchorpane = new AnchorPane();
-//
-//		//graph_numberaxis_x = new NumberAxis();
-//		//graph_numberaxis_y = new NumberAxis();
-//
-//		//graph_linechart = new LineChart<>(graph_numberaxis_x, graph_numberaxis_y);
-//
-//		//series = new XYChart.Series<>();
-//
-//		//graphパーツのインスタンス作成
-//		graph_numberaxis_x = new NumberAxis();
-//	    graph_numberaxis_y = new NumberAxis();
-//
-//		graph_numberaxis_x.setLabel("TimeStamp");//軸のラベル名
-//		graph_numberaxis_y.setLabel("Value");
-//		//graph_linechart = new LineChart<Number, Number>(graph_numberaxis_x, graph_numberaxis_y);
-//		graph_linechart.getData().add(series);
-//
-//		graph_linechart.setTitle("Graph");//Graphのタイトル
-
-
+		//		System.out.println("Hello initialize");
 
 		//個々参考にしてみたら？
 		//http://hideoku.hatenablog.jp/entry/2013/06/07/205016
 		//Scene graph_scene = new Scene(graph_linechart,800,450);
 
-
-		//Stage graph_stage = new Stage();
-		//graph_stage.setScene(graph_scene);
-		//graph_stage.show();
-
-		//split_down_anchorpane = new AnchorPane(graph_linechart);
 	}
 
 	/**
 	 * csvファイルを読み込んでグラフにプロットする
 	 * @param event
 	 */
+	@SuppressWarnings("unchecked")
 	@FXML
 	void onOpenDataAction(ActionEvent event) {
 
 		//ファイル選択するダイアログ
-		FileChooser fc = new FileChooser();
-		fc.setInitialDirectory(new File("..\\"));
-		List<File> list_files;
-
-		list_files = fc.showOpenMultipleDialog(null);
-
-		if (list_files == null) {
-			Alert alert = new Alert(AlertType.INFORMATION, "ファイルが選択されていません");
-			alert.showAndWait();
-			return;
+		List<File> list_files = showOpenMultipleDialog_fc();
+		if (list_files==null) {
+			return;//ユーザーメッセージはshowOpenMultipleDialog_fcで出す．
 		}
 
 		File file = list_files.get(0);//将来的に複数にするけど，とりあえずプロットするため固定
@@ -145,39 +96,91 @@ public class FormController implements Initializable {
 		FileData filedata = new FileData();
 		filedata.import_file(file, 0);//とりあえずtimestampは0想定
 
+		global_list_filedata.add(filedata);//読み込んだファイルdataはglobal_list_filedataに追加すること．
+
 		ArrayList<Long> list_timestamp = filedata.getFile_data_timestamp();
 		ArrayList<Float>[] list_data_array = filedata.getFile_data_contents();
 		String[] title_array = filedata.getFile_data_title();
 
-		//graphパーツ  @FXMLで作成したパーツはNew宣言不要？　（詳しく調べる必要がある
+		//graphパーツ  @FXMLで作成したパーツはNew宣言不要？ (詳しく調べる必要がある
 
-		series = new XYChart.Series<Number, Number>();
-		series.setName("p1");//系統名
+		//グラフ描画 //とりあえずx => timestamp , y => value
 
-		series.getData().add(new XYChart.Data<Number, Number>(10, 22));
-		series.getData().add(new XYChart.Data<Number, Number>(30, 33));
-		series.getData().add(new XYChart.Data<Number, Number>(40, 66));
-		series.getData().add(new XYChart.Data<Number, Number>(60, 69));
-		series.getData().add(new XYChart.Data<Number, Number>(100, 77));
+		//データ
 
+		series_array = Stream.<XYChart.Series<Number, Number>> generate(XYChart.Series::new)//
+				.limit(list_data_array.length)
+				.toArray(XYChart.Series[]::new);//Streamを用いてジェネリクス宣言でXYChart.Seriesをlimit分生成し，toArrayで各配列の中身をnewで初期化する．
 
+		for (int i = 0; i < series_array.length; i++) {
+			series_array[i].setName(title_array[i]);//凡例名の設定
+		}
+
+		//データ設定 ...timestampは初期を0として，差分を足していく
+		long timestamp_before = list_timestamp.get(0);
+		long timestamp_after = list_timestamp.get(0);
+		long timestamp_diffsum = 0;
+
+		boolean is_scale = false;//横にのびるため，横軸に対してスケール処理をおこなう場合のフラグ
+		double scale = 0.3;//スケールどれくらい
+		for (int i = 0; i < list_timestamp.size(); i++) {
+			timestamp_after = list_timestamp.get(i);
+
+			long timestamp_diff = timestamp_after - timestamp_before;
+			for (int j = 0; j < series_array.length; j++) {//データ登録部分
+				long timestamp_register = timestamp_diffsum + timestamp_diff;
+				if (is_scale) {
+					double timestamp_register_scale = timestamp_register*scale;
+					series_array[j].getData()
+							.add(new XYChart.Data<Number, Number>(timestamp_register_scale, list_data_array[j].get(i)));
+				} else {
+					series_array[j].getData()
+							.add(new XYChart.Data<Number, Number>(timestamp_register, list_data_array[j].get(i)));
+				}
+			}
+
+			timestamp_diffsum += timestamp_diff;
+
+			timestamp_before = timestamp_after;
+		}
+
+		//軸
 		graph_numberaxis_x = new NumberAxis();
-	    graph_numberaxis_y = new NumberAxis();
+		graph_numberaxis_y = new NumberAxis();
 
 		graph_numberaxis_x.setLabel("TimeStamp");//軸のラベル名
 		graph_numberaxis_y.setLabel("Value");
-		//graph_linechart = new LineChart<Number, Number>(graph_numberaxis_x, graph_numberaxis_y);
-		graph_linechart.getData().add(series);
+
+		//データをグラフ領域に追加
+		for (XYChart.Series<Number, Number> series : series_array) {
+			graph_linechart.getData().add(series);
+		}
 
 		graph_linechart.setTitle("Graph");//Graphのタイトル
-
-		// graph_linechart.getData().addAll(series1, series2, series3);複数のやつ
-
-		//graph_linechart.setCreateSymbols(false); 特定マークの無効化
+		graph_linechart.setCreateSymbols(false); //特定マークの無効化
 
 		Alert alert2 = new Alert(AlertType.INFORMATION, "グラフまで終わった．．．？");
 		alert2.showAndWait();
 
+	}
+
+	/**
+	 *
+	 * @return List<File> なにもファイルが選択されないとnull
+	 */
+	private List<File> showOpenMultipleDialog_fc() {
+		FileChooser fc = new FileChooser();
+		fc.setInitialDirectory(new File("..\\"));//初期Pathの位置
+		List<File> list_files;
+
+		list_files = fc.showOpenMultipleDialog(null);
+
+		if (list_files == null) {
+			Alert alert = new Alert(AlertType.INFORMATION, "ファイルが選択されていません");
+			alert.showAndWait();
+
+		}
+		return list_files;
 	}
 
 	/**
