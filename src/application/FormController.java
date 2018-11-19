@@ -141,8 +141,10 @@ public class FormController implements Initializable {
 		long timestamp_diffsum = 0;
 
 		boolean is_scale = false;//横にのびるため，横軸に対してスケール処理をおこなう場合のフラグ
-		double scale = 0.3;//スケールどれくらい
-		for (int i = 0; i < list_timestamp.size(); i++) {
+		final double scale = 0.3;//スケールどれくらい
+		final int decimating_num = 3;//動作が重いとき，データを飛ばしてプロットしていく．(1ならすべてプロット) とりあえずマジックナンバー．．．（これが考えなし）
+
+		for (int i = 0; i < list_timestamp.size(); i+=decimating_num) {
 			timestamp_after = list_timestamp.get(i);
 
 			long timestamp_diff = timestamp_after - timestamp_before;
