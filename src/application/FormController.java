@@ -103,9 +103,9 @@ public class FormController implements Initializable {
 
 		//FileDataのインスタンスを作成してデータimport
 		FileData filedata = new FileData();
-		filedata.import_file(file, 0,1000);//とりあえずtimestampは0想定：とりあえず1000ms (1秒)あいたらおかしいってことで．マジックナンバー
+		filedata.import_file(file, 0,1000,true);//とりあえずtimestampは0想定：とりあえず1000ms (1秒)あいたらおかしいってことで．マジックナンバー//タイトルも存在することを前提にします
 
-		global_list_filedata.add(filedata);//読み込んだファイルdataはglobal_list_filedataに追加すること．
+		register_global_FileData(filedata);//読み込んだファイルdataはglobal_list_filedataに追加すること．
 
 		Path local_path = filedata.getFile_path();
 		ArrayList<Long> list_timestamp = filedata.getFile_data_timestamp();
@@ -140,9 +140,9 @@ public class FormController implements Initializable {
 		long timestamp_after = list_timestamp.get(0);
 		long timestamp_diffsum = 0;
 
-		boolean is_scale = false;//横にのびるため，横軸に対してスケール処理をおこなう場合のフラグ
+		final boolean is_scale = false;//横にのびるため，横軸に対してスケール処理をおこなう場合のフラグ
 		final double scale = 0.3;//スケールどれくらい
-		final int decimating_num = 3;//動作が重いとき，データを飛ばしてプロットしていく．(1ならすべてプロット) とりあえずマジックナンバー．．．（これが考えなし）
+		final int decimating_num = 3;//動作が重いとき，データを飛ばしてプロットしていく．(1ならすべてプロット) とりあえずマジックナンバー．．．（これが考えなし） //突如反応があるようなデータにつかっちゃだめだよ
 
 		for (int i = 0; i < list_timestamp.size(); i+=decimating_num) {
 			timestamp_after = list_timestamp.get(i);
@@ -151,10 +151,12 @@ public class FormController implements Initializable {
 			for (int j = 0; j < series_array.length; j++) {//データ登録部分
 				long timestamp_register = timestamp_diffsum + timestamp_diff;
 				if (is_scale) {
+
 					double timestamp_register_scale = timestamp_register*scale;
 					series_array[j].getData()
 							.add(new XYChart.Data<Number, Number>(timestamp_register_scale, list_data_array[j].get(i)));
 				} else {
+
 					series_array[j].getData()
 							.add(new XYChart.Data<Number, Number>(timestamp_register, list_data_array[j].get(i)));
 				}
@@ -166,8 +168,8 @@ public class FormController implements Initializable {
 		}
 
 		//軸
-		graph_numberaxis_x = new NumberAxis();
-		graph_numberaxis_y = new NumberAxis();
+		//graph_numberaxis_x = new NumberAxis();
+		//graph_numberaxis_y = new NumberAxis();
 
 		graph_numberaxis_x.setLabel("TimeStamp");//軸のラベル名
 		graph_numberaxis_y.setLabel("Value");
@@ -177,7 +179,7 @@ public class FormController implements Initializable {
 			graph_linechart.getData().add(series);
 		}
 
-		graph_linechart.setTitle("Graph");//Graphのタイトル
+		graph_linechart.setTitle(local_path.getFileName() + " Graph");//Graphのタイトル
 		graph_linechart.setCreateSymbols(false); //特定マークの無効化
 
 		outputLog(local_path.getFileName()+"をグラフに描画しました");
@@ -207,7 +209,7 @@ public class FormController implements Initializable {
 	}
 
 	/**
-	 *
+	 * Formのラベルに乗せたいメッセージを入力
 	 * @param message ログに乗せたいメッセージ
 	 */
 	private void outputLog(String message) {
@@ -218,6 +220,14 @@ public class FormController implements Initializable {
 		log_label.setText("");
 		log_label.setText(log_content.toString());//LogLabeにデータ追加のお知らせ
 
+	}
+
+	/**
+	 * global_list_filedataにFileDataを登録する
+	 *@param fd FileData
+	 */
+	private void register_global_FileData(FileData fd) {
+		global_list_filedata.add(fd);//読み込んだファイルdataはglobal_list_filedataに追加すること．
 	}
 
 	/**

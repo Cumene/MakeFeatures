@@ -24,7 +24,7 @@ public class FileData {
 
 	private String[] file_data_title;//timestampは除く
 
-	private boolean  is_timestamp_interval = true;//trueなら設定した間隔以下，falseだとintervalがあいていて問題がある．
+	private boolean is_timestamp_interval = true;//trueなら設定した間隔以下，falseだとintervalがあいていて問題がある．
 
 	public FileData() {
 
@@ -74,7 +74,7 @@ public class FileData {
 	 *
 	 */
 	@SuppressWarnings("unchecked")
-	public void import_file(File file, int timestamp_index, long ms) {
+	public void import_file(File file, int timestamp_index, long ms, boolean exists_title) {
 		Path path = file.toPath();
 		file_path = path;
 
@@ -104,15 +104,27 @@ public class FileData {
 					}
 					file_data_title = new String[split_line.length - 1];
 
-					//タイトル代入
 					int j = 0;
-					for (int i = 0; i < split_line.length - 1; i++) {
-						if (i == timestamp_index) {
-							j++;
+					if (exists_title) {
+						//タイトル代入
 
+						for (int i = 0; i < split_line.length - 1; i++) {
+							if (i == timestamp_index) {
+								j++;
+							}
+							file_data_title[i] = split_line[j];
+							j++;
 						}
-						file_data_title[i] = split_line[j];
-						j++;
+					} else {//最初の一行目のデータは消えます．あきらめてください．
+
+						for (int i = 0; i < split_line.length - 1; i++) {
+							if (i == timestamp_index) {
+								j++;
+							}
+							file_data_title[i] = String.valueOf(i);//とりあえず，0から振っておく．
+							j++;
+						}
+
 					}
 
 					//					for (String a : file_data_title) {
@@ -143,7 +155,7 @@ public class FileData {
 
 								is_timestamp_interval = false;
 								String message = Long.toString(timestamp_before) + " , " + Long.toString(read_timestamp)
-								+ " に差があります";
+										+ " に差があります";
 
 								System.out.println(message);
 
@@ -194,7 +206,7 @@ public class FileData {
 
 		File file = new File("..\\TestData\\testdata.csv");
 
-		fd.import_file(file, 0, 100);
+		fd.import_file(file, 0, 100, true);
 
 		fd.showAll();
 
